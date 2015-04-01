@@ -387,10 +387,12 @@ public class CustomShapeEditor : SuperEditor
     private static Vector3 pointSnap = Vector3.one * 0.1f;
     void OnSceneGUI()
     {
-        Transform ts = customShape.transform;
+        Undo.RecordObject(customShape, "Move Custom Shape Point");
 
+        Transform ts = customShape.transform;
         Vector3 oldPoint;
         Vector3 newPoint;
+
         for(int i=0; i<customShape.colorPoints.Length; i++)
         {
             oldPoint = ts.TransformPoint(customShape.colorPoints[i].point);
