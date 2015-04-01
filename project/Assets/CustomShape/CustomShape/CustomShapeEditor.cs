@@ -384,8 +384,23 @@ public class CustomShapeEditor : SuperEditor
         base.listItemMove(srcIndex, dstIndex, property);
     }
 
+    private static Vector3 pointSnap = Vector3.one * 0.1f;
     void OnSceneGUI()
     {
-        
+        Transform ts = customShape.transform;
+
+        Vector3 oldPoint;
+        Vector3 newPoint;
+        for(int i=0; i<customShape.colorPoints.Length; i++)
+        {
+            oldPoint = ts.TransformPoint(customShape.colorPoints[i].point);
+            newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.03f, pointSnap, Handles.DotCap);
+            if (oldPoint != newPoint)
+            {
+                customShape.colorPoints[i].point = ts.InverseTransformPoint(newPoint);
+                customShape.updateMesh();
+            }
+        }
     }
+
 }
