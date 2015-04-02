@@ -10,7 +10,7 @@ public class CustomShape : MonoBehaviour
 
     private Mesh mesh;
 
-    void OnEable()
+    void OnEnable()
     {
         updateMesh();
     }
