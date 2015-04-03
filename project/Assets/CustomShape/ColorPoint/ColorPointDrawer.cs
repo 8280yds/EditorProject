@@ -4,6 +4,21 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(ColorPoint))]
 public class ColorPointDrawer : SuperDrawer<ColorPointDrawerData>
 {
+    public static GUIStyle m_style;
+
+    public GUIStyle style
+    {
+        get
+        {
+            if (m_style == null)
+            {
+                m_style = new GUIStyle();
+                m_style.normal.textColor = Color.red;
+            }
+            return m_style;
+        }
+    }
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         EditorGUI.BeginProperty(position, label, property);
@@ -17,7 +32,7 @@ public class ColorPointDrawer : SuperDrawer<ColorPointDrawerData>
             w = 32f;
         }
         Rect rect = new Rect(position.x, position.y, w, position.height);
-        EditorGUI.LabelField(rect, str);
+        EditorGUI.LabelField(rect, str, drawerData.selected ? style : GUIStyle.none);
 
         position.x += w;
         position.width -= w;

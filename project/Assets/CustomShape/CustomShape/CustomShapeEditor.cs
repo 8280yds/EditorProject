@@ -28,6 +28,8 @@ public class CustomShapeEditor : SuperEditor
     private int shapeSelectedIndex = 0;
     private int sidesNum = 3;
 
+    private int selectedPointIndex = -1;
+
     void OnEnable()
     {
         colorPoints = serializedObject.FindProperty("colorPoints");
@@ -48,6 +50,7 @@ public class CustomShapeEditor : SuperEditor
         {
             datas[i] = new ColorPointDrawerData();
             datas[i].index = i;
+            datas[i].selected = i == selectedPointIndex;
             pointNames[i] = "●" + (i + 1);
         }
 
@@ -384,24 +387,39 @@ public class CustomShapeEditor : SuperEditor
         base.listItemMove(srcIndex, dstIndex, property);
     }
 
-    private static Vector3 pointSnap = Vector3.one * 0.1f;
     void OnSceneGUI()
     {
         Undo.RecordObject(customShape, "Move Custom Shape Point");
+        int newSelectedPointIndex = -1;
 
         Transform ts = customShape.transform;
         Vector3 oldPoint;
         Vector3 newPoint;
+        Event evt = Event.current;
+
+        if (evt.isMouse && evt.button == 0 && evt.type == EventType.MouseDown)
+        {
+            selectedPointIndex = -1;
+        }
 
         for(int i=0; i<customShape.colorPoints.Length; i++)
         {
+            if (evt.isMouse && evt.button == 0 && evt.type == EventType.MouseDown)
+            {
+                newSelectedPointIndex++;
+            }
             oldPoint = ts.TransformPoint(customShape.colorPoints[i].point);
-            newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.03f, pointSnap, Handles.DotCap);
+            newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.03f, Vector3.zero, Handles.DotCap);
             if (oldPoint != newPoint)
             {
                 customShape.colorPoints[i].point = ts.InverseTransformPoint(newPoint);
                 customShape.updateMesh();
             }
+        }
+        if (newSelectedPointIndex >= 0 && selectedPointIndex != newSelectedPointIndex)
+        {
+            selectedPointIndex = newSelectedPointIndex;
+            Repaint();
         }
     }
 
